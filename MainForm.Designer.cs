@@ -32,10 +32,11 @@ namespace atol_reg
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.lblDate = new System.Windows.Forms.Label();
             this.dtpReg = new System.Windows.Forms.DateTimePicker();
             this.btnStart = new System.Windows.Forms.Button();
             this.lbLog = new System.Windows.Forms.ListBox();
-            this.lblDate = new System.Windows.Forms.Label();
+            this.btnCheckConnection = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -50,6 +51,7 @@ namespace atol_reg
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.btnCheckConnection);
             this.splitContainer1.Panel1.Controls.Add(this.lblDate);
             this.splitContainer1.Panel1.Controls.Add(this.dtpReg);
             this.splitContainer1.Panel1.Controls.Add(this.btnStart);
@@ -60,6 +62,15 @@ namespace atol_reg
             this.splitContainer1.Size = new System.Drawing.Size(571, 252);
             this.splitContainer1.SplitterDistance = 157;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // lblDate
+            // 
+            this.lblDate.AutoSize = true;
+            this.lblDate.Location = new System.Drawing.Point(10, 11);
+            this.lblDate.Name = "lblDate";
+            this.lblDate.Size = new System.Drawing.Size(36, 13);
+            this.lblDate.TabIndex = 2;
+            this.lblDate.Text = "Дата:";
             // 
             // dtpReg
             // 
@@ -90,14 +101,15 @@ namespace atol_reg
             this.lbLog.Size = new System.Drawing.Size(401, 238);
             this.lbLog.TabIndex = 0;
             // 
-            // lblDate
+            // btnCheckConnection
             // 
-            this.lblDate.AutoSize = true;
-            this.lblDate.Location = new System.Drawing.Point(10, 11);
-            this.lblDate.Name = "lblDate";
-            this.lblDate.Size = new System.Drawing.Size(36, 13);
-            this.lblDate.TabIndex = 2;
-            this.lblDate.Text = "Дата:";
+            this.btnCheckConnection.Location = new System.Drawing.Point(3, 189);
+            this.btnCheckConnection.Name = "btnCheckConnection";
+            this.btnCheckConnection.Size = new System.Drawing.Size(147, 23);
+            this.btnCheckConnection.TabIndex = 3;
+            this.btnCheckConnection.Text = "Соединение";
+            this.btnCheckConnection.UseVisualStyleBackColor = true;
+            this.btnCheckConnection.Click += new System.EventHandler(this.btnCheckConnection_Click);
             // 
             // MainForm
             // 
@@ -122,6 +134,7 @@ namespace atol_reg
         private System.Windows.Forms.ListBox lbLog;
         private System.Windows.Forms.DateTimePicker dtpReg;
         private Label lblDate;
+        private Button btnCheckConnection;
     }
 }
 

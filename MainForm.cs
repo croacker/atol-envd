@@ -17,66 +17,79 @@ namespace atol_reg
             InitializeComponent();
         }
 
+        private void btnCheckConnection_Click(object sender, EventArgs e)
+        {
+            checkConnection();
+        }
+
         private void btnStartClick(object sender, EventArgs e)
         {
             start();
         }
 
+        /// <summary>
+        /// Проверить соединение
+        /// </summary>
+        private void checkConnection()
+        {
+            var fptrCommon = connect();
+            if (fptrCommon.errorCode() != 0)
+            {
+                var msg = fptrCommon.errorDescription();
+                addLog(msg);
+                MessageBox.Show(msg);                                        // Если есть ошибки при открытии соед-я, то выводим сообщение с описанием ошибки
+                fptrCommon.close();
+                return;                                                                                        // и выходим
+            }
+
+            // == Считываем параметры рег-ии ==            
+            var fptrParameters = getFptrParameters(fptrCommon);
+            addLog(fptrParameters.TaxationTypes.ToString());
+            addLog(fptrParameters.AgentSign.ToString());
+            addLog(fptrParameters.FfdVersion.ToString());
+            addLog(fptrParameters.AutoModeSign.ToString());
+            addLog(fptrParameters.OfflineModeSign.ToString());
+            addLog(fptrParameters.EncryptionSign.ToString());
+            addLog(fptrParameters.InternetSign.ToString());
+            addLog(fptrParameters.ServiceSign.ToString());
+            addLog(fptrParameters.BsoSign.ToString());
+            addLog(fptrParameters.LotterySign.ToString());
+            addLog(fptrParameters.GamblingSign.ToString());
+            addLog(fptrParameters.ExciseSign.ToString());
+            addLog(fptrParameters.MachineInstallationSign.ToString());
+            addLog(fptrParameters.FnsUrl);
+            addLog(fptrParameters.OrganizationName);
+            addLog(fptrParameters.OrganizationEmail);
+            addLog(fptrParameters.PaymentsAddressM);
+            addLog(fptrParameters.MachineNumber);
+            addLog(fptrParameters.OfdVATIN);
+            addLog(fptrParameters.OfdName);
+            fptrCommon.close();
+        }
+
+
         private void start()
         {
 
-            var fptrCommon = new Fptr();
-            fptrCommon.setSingleSetting(Constants.LIBFPTR_SETTING_MODEL, Constants.LIBFPTR_MODEL_ATOL_AUTO.ToString());            // Задаем автоматическое определение модели ККМ
-            //fptrCommon .setSingleSetting(Constants.LIBFPTR_SETTING_PORT, (KKM10.LIBFPTR_PORT_COM));                    // Задаем подключение по COM-порту
-            fptrCommon.setSingleSetting(Constants.LIBFPTR_SETTING_PORT, Constants.LIBFPTR_PORT_USB.ToString());                    // Задаем подключение по USB
-            //fptrCommon .setSingleSetting(Constants.LIBFPTR_SETTING_COM_FILE, "COM1");                                // Задаем номер COM-порта
-            //fptrCommon .setSingleSetting(Constants.LIBFPTR_SETTING_BAUDRATE, Constants.LIBFPTR_PORT_BR_115200.ToString());        // Задаем скорость обмена
-
-            fptrCommon.applySingleSettings();                                                                    // Применяем настройки
-            fptrCommon.open();
-
+            var fptrCommon = connect();
             if (fptrCommon.errorCode() != 0)
             {
-                var description = fptrCommon.errorDescription();
-                lbLog.Items.Add(description);
-                MessageBox.Show(description);                                        // Если есть ошибки при открытии соед-я, то выводим сообщение с описанием ошибки
+                var msg = fptrCommon.errorDescription();
+                addLog(msg);
+                MessageBox.Show(msg);                                        // Если есть ошибки при открытии соед-я, то выводим сообщение с описанием ошибки
                 return;                                                                                        // и выходим
             }
 
             // == Считываем параметры рег-ии ==
-            fptrCommon.setParam(Constants.LIBFPTR_PARAM_FN_DATA_TYPE, Constants.LIBFPTR_FNDT_REG_INFO);
-            fptrCommon.fnQueryData();
-
-            var fptrParameters = new FptrParameters();
-            fptrParameters.TaxationTypes = fptrCommon.getParamInt(1062);                                            // Текущая СНО
-            fptrParameters.AgentSign = fptrCommon.getParamInt(1057);
-            fptrParameters.FfdVersion = fptrCommon.getParamInt(1209);
-            fptrParameters.AutoModeSign = fptrCommon.getParamBool(1001);
-            fptrParameters.OfflineModeSign = fptrCommon.getParamBool(1002);
-            fptrParameters.EncryptionSign = fptrCommon.getParamBool(1056);
-            fptrParameters.InternetSign = fptrCommon.getParamBool(1108);
-            fptrParameters.ServiceSign = fptrCommon.getParamBool(1109);
-            fptrParameters.BsoSign = fptrCommon.getParamBool(1110);
-            fptrParameters.LotterySign = fptrCommon.getParamBool(1126);
-            fptrParameters.GamblingSign = fptrCommon.getParamBool(1193);
-            fptrParameters.ExciseSign = fptrCommon.getParamBool(1207);
-            fptrParameters.MachineInstallationSign = fptrCommon.getParamBool(1221);
-            fptrParameters.FnsUrl = fptrCommon.getParamString(1060);
-            fptrParameters.OrganizationName = fptrCommon.getParamString(1048);
-            fptrParameters.OrganizationEmail = fptrCommon.getParamString(1117);
-            fptrParameters.PaymentsAddressM = fptrCommon.getParamString(1187);
-            fptrParameters.PaymentsAddress = fptrCommon.getParamString(1009);
-            fptrParameters.MachineNumber = fptrCommon.getParamString(1036);
-            fptrParameters.OfdVATIN = fptrCommon.getParamString(1017);
-            fptrParameters.OfdName = fptrCommon.getParamString(1046);
+            var fptrParameters = getFptrParameters(fptrCommon);
             // == Закончили считывать параметры рег-ии ==
 
             if ((fptrParameters.TaxationTypes == 8) && (GetTime() > 1609459200))                // Если текущая СНО = ЕНВД и текущая дата больше 01.01.2021, то...
             {
                 reg(fptrCommon, fptrParameters);// ... перерегистрация
-                var description = "Перерегистрация успешно проведена!";
-                lbLog.Items.Add(description);
-                MessageBox.Show(description);                            // Сообщение
+                var msg = "Перерегистрация успешно проведена!";
+                addLog(msg);
+                MessageBox.Show(msg);                            // Сообщение
             }
             fptrCommon.close();
         }
@@ -92,7 +105,9 @@ namespace atol_reg
             if (state != 0)                                                                                    // Если смена НЕ закрыта, то...
             {
                 fptrCommon.close();
-                MessageBox.Show("Смена открыта. Закройте смену и перезапустите Frontol");            // ... ругаемся
+                var msg = "Смена открыта. Закройте смену и перезапустите Frontol";
+                addLog(msg);
+                MessageBox.Show(msg);            // ... ругаемся
                 return;
                 // и выходим
             }
@@ -132,9 +147,9 @@ namespace atol_reg
 
             if (fptrCommon.errorCode() != 0)                                                    // Проверяем ошибки
             {
-                var description = fptrCommon.errorDescription();
-                lbLog.Items.Add(description);
-                MessageBox.Show(description); // Если есть ошибки, то выводим сообщение с описанием ошибки
+                var msg = fptrCommon.errorDescription();
+                addLog(msg);
+                MessageBox.Show(msg); // Если есть ошибки, то выводим сообщение с описанием ошибки
                 fptrCommon.close();
                 return;
             }
@@ -145,12 +160,64 @@ namespace atol_reg
 
             if (fptrCommon.errorCode() != 0)                                                    // Проверяем ошибки
             {
-                var description = fptrCommon.errorDescription();
-                lbLog.Items.Add(description);
-                MessageBox.Show(description);                     // Если есть ошибки, то выводим сообщение с описанием ошибки
+                var msg = fptrCommon.errorDescription();
+                addLog(msg);
+                MessageBox.Show(msg);                     // Если есть ошибки, то выводим сообщение с описанием ошибки
                 fptrCommon.close();
                 return;
             }
+        }
+
+        /// <summary>
+        /// Запустить драйвер, подключится к ФР.
+        /// </summary>
+        /// <returns></returns>
+        private Fptr connect()
+        {
+            var fptrCommon = new Fptr();
+            fptrCommon.setSingleSetting(Constants.LIBFPTR_SETTING_MODEL, Constants.LIBFPTR_MODEL_ATOL_AUTO.ToString());            // Задаем автоматическое определение модели ККМ
+            //fptrCommon .setSingleSetting(Constants.LIBFPTR_SETTING_PORT, (KKM10.LIBFPTR_PORT_COM));                    // Задаем подключение по COM-порту
+            fptrCommon.setSingleSetting(Constants.LIBFPTR_SETTING_PORT, Constants.LIBFPTR_PORT_USB.ToString());                    // Задаем подключение по USB
+            //fptrCommon .setSingleSetting(Constants.LIBFPTR_SETTING_COM_FILE, "COM1");                                // Задаем номер COM-порта
+            //fptrCommon .setSingleSetting(Constants.LIBFPTR_SETTING_BAUDRATE, Constants.LIBFPTR_PORT_BR_115200.ToString());        // Задаем скорость обмена
+
+            fptrCommon.applySingleSettings();                                                                    // Применяем настройки
+            fptrCommon.open();
+            return fptrCommon;
+        }
+
+        /// <summary>
+        /// Получить параметры ККТ.
+        /// </summary>
+        /// <param name="fptrCommon"></param>
+        /// <returns>параметры ККТ</returns>        
+        private FptrParameters getFptrParameters(Fptr fptrCommon)
+        {
+            fptrCommon.setParam(Constants.LIBFPTR_PARAM_FN_DATA_TYPE, Constants.LIBFPTR_FNDT_REG_INFO);
+            fptrCommon.fnQueryData();
+            var fptrParameters = new FptrParameters();
+            fptrParameters.TaxationTypes = fptrCommon.getParamInt(1062);                                            // Текущая СНО
+            fptrParameters.AgentSign = fptrCommon.getParamInt(1057);
+            fptrParameters.FfdVersion = fptrCommon.getParamInt(1209);
+            fptrParameters.AutoModeSign = fptrCommon.getParamBool(1001);
+            fptrParameters.OfflineModeSign = fptrCommon.getParamBool(1002);
+            fptrParameters.EncryptionSign = fptrCommon.getParamBool(1056);
+            fptrParameters.InternetSign = fptrCommon.getParamBool(1108);
+            fptrParameters.ServiceSign = fptrCommon.getParamBool(1109);
+            fptrParameters.BsoSign = fptrCommon.getParamBool(1110);
+            fptrParameters.LotterySign = fptrCommon.getParamBool(1126);
+            fptrParameters.GamblingSign = fptrCommon.getParamBool(1193);
+            fptrParameters.ExciseSign = fptrCommon.getParamBool(1207);
+            fptrParameters.MachineInstallationSign = fptrCommon.getParamBool(1221);
+            fptrParameters.FnsUrl = fptrCommon.getParamString(1060);
+            fptrParameters.OrganizationName = fptrCommon.getParamString(1048);
+            fptrParameters.OrganizationEmail = fptrCommon.getParamString(1117);
+            fptrParameters.PaymentsAddressM = fptrCommon.getParamString(1187);
+            fptrParameters.PaymentsAddress = fptrCommon.getParamString(1009);
+            fptrParameters.MachineNumber = fptrCommon.getParamString(1036);
+            fptrParameters.OfdVATIN = fptrCommon.getParamString(1017);
+            fptrParameters.OfdName = fptrCommon.getParamString(1046);
+            return fptrParameters;
         }
 
         //Получить дату, время текущее.
@@ -160,8 +227,14 @@ namespace atol_reg
             return (int)(time.TotalMilliseconds/1000 + 0.5);
         }
 
+        private void addLog(string msg)
+        {
+            lbLog.Items.Add(msg);
+        }
+
+
     }
 
- 
+
 
 }
