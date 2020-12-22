@@ -37,33 +37,34 @@ namespace atol_reg
             {
                 var msg = fptrCommon.errorDescription();
                 addLog(msg);
-                MessageBox.Show(msg);                                        // Если есть ошибки при открытии соед-я, то выводим сообщение с описанием ошибки
+                showError(msg); // Если есть ошибки при открытии соед-я, то выводим сообщение с описанием ошибки
                 fptrCommon.close();
                 return;                                                                                        // и выходим
             }
 
             // == Считываем параметры рег-ии ==            
             var fptrParameters = getFptrParameters(fptrCommon);
-            addLog(fptrParameters.TaxationTypes.ToString());
-            addLog(fptrParameters.AgentSign.ToString());
-            addLog(fptrParameters.FfdVersion.ToString());
-            addLog(fptrParameters.AutoModeSign.ToString());
-            addLog(fptrParameters.OfflineModeSign.ToString());
-            addLog(fptrParameters.EncryptionSign.ToString());
-            addLog(fptrParameters.InternetSign.ToString());
-            addLog(fptrParameters.ServiceSign.ToString());
-            addLog(fptrParameters.BsoSign.ToString());
-            addLog(fptrParameters.LotterySign.ToString());
-            addLog(fptrParameters.GamblingSign.ToString());
-            addLog(fptrParameters.ExciseSign.ToString());
-            addLog(fptrParameters.MachineInstallationSign.ToString());
-            addLog(fptrParameters.FnsUrl);
-            addLog(fptrParameters.OrganizationName);
-            addLog(fptrParameters.OrganizationEmail);
-            addLog(fptrParameters.PaymentsAddressM);
-            addLog(fptrParameters.MachineNumber);
-            addLog(fptrParameters.OfdVATIN);
-            addLog(fptrParameters.OfdName);
+            addLog("Система налогообложения(1062):" + fptrParameters.TaxationTypes.ToString());
+            addLog("Признак агента(1057):" + fptrParameters.AgentSign.ToString());
+            addLog("Версия ФФД(1209):" + fptrParameters.FfdVersion.ToString());
+            addLog("Признак автоматического режима(1001):" + fptrParameters.AutoModeSign.ToString());
+            addLog("Признак автономного режима(1002):" + fptrParameters.OfflineModeSign.ToString());
+            addLog("Признак шифрования(1056):" + fptrParameters.EncryptionSign.ToString());
+            addLog("Признак ККТ для расчетов в сети Интернет(1108):" + fptrParameters.InternetSign.ToString());
+            addLog("Признак расчетов за услуги(1109):" + fptrParameters.ServiceSign.ToString());
+            addLog("Признак АС БСО(1110):" + fptrParameters.BsoSign.ToString());
+            addLog("Признак проведения лотерей(1126):" + fptrParameters.LotterySign.ToString());
+            addLog("Признак проведения азартных игр(1193):" + fptrParameters.GamblingSign.ToString());
+            addLog("Признак подакцизного товара(1207):" + fptrParameters.ExciseSign.ToString());
+            addLog("Признак установки в автомате(1221):" + fptrParameters.MachineInstallationSign.ToString());
+            addLog("Адрес сайта ФНС(1060):" + fptrParameters.FnsUrl);
+            addLog("Название организации(1048):" + fptrParameters.OrganizationName);
+            addLog("E-mail организации(1117):" + fptrParameters.OrganizationEmail);
+            addLog("Адрес места расчетов(1187):" + fptrParameters.PaymentsAddressM);
+            addLog("Адрес расчетов(1009):" + fptrParameters.PaymentsAddress);
+            addLog("Номер автомата(1036):" + fptrParameters.MachineNumber);
+            addLog("ИНН ОФД(1017):" + fptrParameters.OfdVATIN);
+            addLog("Название ОФД(1046):" + fptrParameters.OfdName);
             fptrCommon.close();
         }
 
@@ -76,7 +77,7 @@ namespace atol_reg
             {
                 var msg = fptrCommon.errorDescription();
                 addLog(msg);
-                MessageBox.Show(msg);                                        // Если есть ошибки при открытии соед-я, то выводим сообщение с описанием ошибки
+                showError(msg);                                        // Если есть ошибки при открытии соед-я, то выводим сообщение с описанием ошибки
                 return;                                                                                        // и выходим
             }
 
@@ -107,7 +108,7 @@ namespace atol_reg
                 fptrCommon.close();
                 var msg = "Смена открыта. Закройте смену и перезапустите Frontol";
                 addLog(msg);
-                MessageBox.Show(msg);            // ... ругаемся
+                showError(msg);            // ... ругаемся
                 return;
                 // и выходим
             }
@@ -149,7 +150,7 @@ namespace atol_reg
             {
                 var msg = fptrCommon.errorDescription();
                 addLog(msg);
-                MessageBox.Show(msg); // Если есть ошибки, то выводим сообщение с описанием ошибки
+                showError(msg); // Если есть ошибки, то выводим сообщение с описанием ошибки
                 fptrCommon.close();
                 return;
             }
@@ -162,7 +163,7 @@ namespace atol_reg
             {
                 var msg = fptrCommon.errorDescription();
                 addLog(msg);
-                MessageBox.Show(msg);                     // Если есть ошибки, то выводим сообщение с описанием ошибки
+                showError(msg);                     // Если есть ошибки, то выводим сообщение с описанием ошибки
                 fptrCommon.close();
                 return;
             }
@@ -232,6 +233,10 @@ namespace atol_reg
             lbLog.Items.Add(msg);
         }
 
+        private void showError(string msg)
+        {
+            MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
     }
 
