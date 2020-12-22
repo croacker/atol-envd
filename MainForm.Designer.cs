@@ -129,7 +129,7 @@ namespace atol_reg
             this.Controls.Add(this.scMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "Отменили ЕНВД!";
+            this.Text = "Отменили ЕНВД!(0.0.1)";
             this.scMain.Panel1.ResumeLayout(false);
             this.scMain.Panel1.PerformLayout();
             this.scMain.Panel2.ResumeLayout(false);
